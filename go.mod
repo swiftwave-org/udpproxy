@@ -1,4 +1,4 @@
-module udp_handler
+module github.com/swiftwave-org/udplb
 
 go 1.21.3
 

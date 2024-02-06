@@ -16,3 +16,7 @@ The reason is
 - It will have a backup mechanism to alert swiftwave if service is unreachable. (future requirement)
 - Will support runtime configuration change.
 - Will only managed over unix socket.
+
+**Environment Variables -**
+- `SOCKET_PATH` - Path of the unix socket. Default: `/etc/udplb/api.sock/`
+- `RECORDS_PATH` - Path of the records file. Default: `/etc/udplb/records`
