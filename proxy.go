@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	DNSError = errors.New("DNS resolution failed")
-	DNSNoIP  = errors.New("No IP address found")
+	ErrDNSResolution = errors.New("dns resolution failed")
+	ErrDNSNoIP       = errors.New("no ip address found")
 )
 
 const (
@@ -58,13 +58,13 @@ type UDPProxy struct {
 	listener       *net.UDPConn
 	port           int
 	targetPort     int
-	serviceName    string
+	service        string
 	connTrackTable connTrackMap
 	connTrackLock  sync.Mutex
 }
 
 // NewUDPProxy creates a new UDPProxy.
-func NewUDPProxy(port int, targetPort int, serviceName string) (*UDPProxy, error) {
+func NewUDPProxy(port int, targetPort int, service string) (*UDPProxy, error) {
 	// detect version of hostIP to bind only to correct version
 	listener, err := net.ListenUDP("udp4", &net.UDPAddr{IP: net.IPv4zero, Port: port})
 	if err != nil {
@@ -74,7 +74,7 @@ func NewUDPProxy(port int, targetPort int, serviceName string) (*UDPProxy, error
 		listener:       listener,
 		port:           port,
 		targetPort:     targetPort,
-		serviceName:    serviceName,
+		service:        service,
 		connTrackTable: make(connTrackMap),
 	}, nil
 }
@@ -123,7 +123,7 @@ func (proxy *UDPProxy) Run() {
 			// ECONNREFUSED like Read do (see comment in
 			// UDPProxy.replyLoop)
 			if !isClosedError(err) {
-				log.Printf("Stopping proxy on port/%d for service %s udp/%d (%s)", proxy.port, proxy.serviceName, proxy.targetPort, err)
+				log.Printf("Stopping proxy on port/%d for service %s udp/%d (%s)", proxy.port, proxy.service, proxy.targetPort, err)
 			}
 			break
 		}
@@ -132,10 +132,10 @@ func (proxy *UDPProxy) Run() {
 		proxy.connTrackLock.Lock()
 		proxyConn, hit := proxy.connTrackTable[*fromKey]
 		if !hit {
-			ip, err := resolveDNS(proxy.serviceName)
+			ip, err := resolveDNS(proxy.service)
 			if err != nil {
 				// TODO:  report to swiftwave that no IP address found
-				log.Printf("Can't resolve the DNS for %s: %s\n", proxy.serviceName, err)
+				log.Printf("Can't resolve the DNS for %s: %s\n", proxy.service, err)
 				proxy.connTrackLock.Unlock()
 				continue
 			}
@@ -147,7 +147,7 @@ func (proxy *UDPProxy) Run() {
 			}
 			proxyConn, err = net.DialUDP("udp", nil, backendAddr)
 			if err != nil {
-				log.Printf("Can't proxy a datagram to %s udp/%d: %s\n", proxy.serviceName, proxy.targetPort, err)
+				log.Printf("Can't proxy a datagram to %s udp/%d: %s\n", proxy.service, proxy.targetPort, err)
 				proxy.connTrackLock.Unlock()
 				continue
 			}
@@ -158,7 +158,7 @@ func (proxy *UDPProxy) Run() {
 		for i := 0; i != read; {
 			written, err := proxyConn.Write(readBuf[i:read])
 			if err != nil {
-				log.Printf("Can't proxy a datagram to %s udp/%d: %s\n", proxy.serviceName, proxy.targetPort, err)
+				log.Printf("Can't proxy a datagram to %s udp/%d: %s\n", proxy.service, proxy.targetPort, err)
 				break
 			}
 			i += written
@@ -186,18 +186,18 @@ func isClosedError(err error) bool {
 	return strings.HasSuffix(err.Error(), "use of closed network connection")
 }
 
-func resolveDNS(serviceName string) (string, error) {
+func resolveDNS(service string) (string, error) {
 	/*
 	 * Resolve the DNS for the service name
 	 * Use the system default DNS resolver
 	 * Return only single IP address
 	 */
-	ips, err := net.LookupIP(serviceName)
+	ips, err := net.LookupIP(service)
 	if err != nil {
-		return "", DNSError
+		return "", ErrDNSResolution
 	}
 	if len(ips) == 0 {
-		return "", DNSNoIP
+		return "", ErrDNSNoIP
 	}
 	return ips[0].String(), nil
 }
