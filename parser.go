@@ -10,14 +10,22 @@ import (
 	"strings"
 )
 
-// var storedFilePath = "/etc/udplb/records"
-var storedFilePath = "/home/tanmoy/Desktop/udp_traffic/records"
+var storedFilePath = "/etc/udplb/records"
 
 func init() {
 	// try to read records path from environment
 	storedFilePathEnv := os.Getenv("RECORDS_PATH")
 	if storedFilePathEnv != "" {
 		storedFilePath = storedFilePathEnv
+	}
+	// create directory if not exists
+	directory := filepath.Dir(storedFilePath)
+	// create directory if not exists
+	err := os.MkdirAll(directory, 0755)
+	if err != nil {
+		log.Println("failed to create directory")
+		log.Println(err)
+		os.Exit(1)
 	}
 }
 
@@ -61,16 +69,8 @@ func ReadRecordsFromFile() ([]ProxyRecord, error) {
 }
 
 func writeToFile(path string, data string) error {
-	directory := filepath.Dir(path)
-	// create directory if not exists
-	err := os.MkdirAll(directory, 0755)
-	if err != nil {
-		log.Println("failed to create directory")
-		log.Println(err)
-		return errors.New("failed to create directory")
-	}
 	// write in file
-	err = os.WriteFile(path, []byte(data), 0644)
+	err := os.WriteFile(path, []byte(data), 0644)
 	if err != nil {
 		log.Println("failed to write in file")
 		log.Println(err)

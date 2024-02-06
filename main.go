@@ -2,10 +2,29 @@ package main
 
 import (
 	"log"
+	"net"
+	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 )
+
+var socketPath = "/etc/udplb/api.sock"
+
+func init() {
+	socketPathEnv := os.Getenv("SOCKET_PATH")
+	if socketPathEnv != "" {
+		socketPath = socketPathEnv
+	}
+	// create dir
+	err := os.MkdirAll(filepath.Dir(socketPath), 0755)
+	if err != nil {
+		log.Println("Failed to create directory")
+		log.Println(err)
+		os.Exit(1)
+	}
+}
 
 func main() {
 	server := newAPIServer()
@@ -47,7 +66,16 @@ func main() {
 		}
 	}()
 
-	server.Start(":8080")
+	// start server
+	listener, err := net.Listen("unix", socketPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	server.Listener = listener
+	httpServer := new(http.Server)
+	if err := server.StartServer(httpServer); err != nil {
+		log.Fatal(err)
+	}
 	// wait lifetime
 	select {}
 }
