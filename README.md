@@ -1,8 +1,8 @@
-#### UDP Proxy + Load Balancer
+#### UDP Proxy with Service Activation Support
 
 **Why required -** 
 
-Swiftwave uses HAProxy as ingress and it can handle TCP/HTTP traffic. But it can't handle UDP traffic. So, we need a UDP proxy to handle UDP traffic and also to load balance it.
+Swiftwave uses HAProxy as ingress and it can handle TCP/HTTP traffic. But it can't handle UDP traffic. So, we need a UDP proxy to handle UDP traffic.
 
 You may thought why we not using Docker Swarm Ingress for UDP traffic.
 
