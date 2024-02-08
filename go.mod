@@ -1,4 +1,4 @@
-module github.com/swiftwave-org/udplb
+module github.com/swiftwave-org/udpproxy
 
 go 1.21.3
 

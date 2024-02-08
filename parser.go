@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var storedFilePath = "/etc/udplb/records"
+var storedFilePath = "/var/lib/udpproxy/records"
 
 func init() {
 	// try to read records path from environment

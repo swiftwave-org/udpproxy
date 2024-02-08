@@ -10,7 +10,7 @@ import (
 	"syscall"
 )
 
-var socketPath = "/etc/udplb/api.sock"
+var socketPath = "/etc/udpproxy/api.sock"
 
 func init() {
 	socketPathEnv := os.Getenv("SOCKET_PATH")

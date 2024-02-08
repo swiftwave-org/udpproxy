@@ -18,5 +18,5 @@ The reason is
 - Will only managed over unix socket.
 
 **Environment Variables -**
-- `SOCKET_PATH` - Path of the unix socket. Default: `/etc/udplb/api.sock`
-- `RECORDS_PATH` - Path of the records file. Default: `/etc/udplb/records`
+- `SOCKET_PATH` - Path of the unix socket. Default: `/etc/udpproxy/api.sock`
+- `RECORDS_PATH` - Path of the records file. Default: `/var/lib/udpproxy/records`
