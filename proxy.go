@@ -6,7 +6,7 @@ package main
 import (
 	"encoding/binary"
 	"errors"
-	"log"
+	"fmt"
 	"net"
 	"strings"
 	"sync"
@@ -123,7 +123,7 @@ func (proxy *UDPProxy) Run() {
 			// ECONNREFUSED like Read do (see comment in
 			// UDPProxy.replyLoop)
 			if !isClosedError(err) {
-				log.Printf("Stopping proxy on port/%d for service %s udp/%d (%s)", proxy.port, proxy.service, proxy.targetPort, err)
+				fmt.Printf("Stopping proxy on port/%d for service %s udp/%d (%s)", proxy.port, proxy.service, proxy.targetPort, err)
 			}
 			break
 		}
@@ -135,7 +135,7 @@ func (proxy *UDPProxy) Run() {
 			ip, err := resolveDNS(proxy.service)
 			if err != nil {
 				// TODO:  report to swiftwave that no IP address found
-				log.Printf("Can't resolve the DNS for %s: %s\n", proxy.service, err)
+				fmt.Printf("Can't resolve the DNS for %s: %s\n", proxy.service, err)
 				proxy.connTrackLock.Unlock()
 				continue
 			}
@@ -147,7 +147,7 @@ func (proxy *UDPProxy) Run() {
 			}
 			proxyConn, err = net.DialUDP("udp", nil, backendAddr)
 			if err != nil {
-				log.Printf("Can't proxy a datagram to %s udp/%d: %s\n", proxy.service, proxy.targetPort, err)
+				fmt.Printf("Can't proxy a datagram to %s udp/%d: %s\n", proxy.service, proxy.targetPort, err)
 				proxy.connTrackLock.Unlock()
 				continue
 			}
@@ -158,7 +158,7 @@ func (proxy *UDPProxy) Run() {
 		for i := 0; i != read; {
 			written, err := proxyConn.Write(readBuf[i:read])
 			if err != nil {
-				log.Printf("Can't proxy a datagram to %s udp/%d: %s\n", proxy.service, proxy.targetPort, err)
+				fmt.Printf("Can't proxy a datagram to %s udp/%d: %s\n", proxy.service, proxy.targetPort, err)
 				break
 			}
 			i += written
