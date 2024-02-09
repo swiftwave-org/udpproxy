@@ -1,10 +1,18 @@
 package main
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+)
 
 func newAPIServer() *echo.Echo {
 	e := echo.New()
 	e.HideBanner = true
+	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(middleware.Recover())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "${method} ${uri} | ${remote_ip} | ${status} ${error}\n",
+	}))
 	e.POST("/v1/proxy/add", addProxyAPI)
 	e.POST("/v1/proxy/remove", removeProxyAPI)
 	e.POST("/v1/proxy/exist", isExistProxyAPI)
