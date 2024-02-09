@@ -27,6 +27,10 @@ func init() {
 }
 
 func main() {
+	// remove socket file
+	_ = os.Remove(socketPath)
+
+
 	server := newAPIServer()
 	// load records from file
 	records, err := ReadRecordsFromFile()
