@@ -115,6 +115,7 @@ func (proxy *UDPProxy) replyLoop(proxyConn *net.UDPConn, clientAddr *net.UDPAddr
 
 // Run starts forwarding the traffic using UDP.
 func (proxy *UDPProxy) Run() {
+	fmt.Printf("Starting proxy on port/%d for service %s udp/%d\n", proxy.port, proxy.service, proxy.targetPort)
 	readBuf := make([]byte, UDPBufSize)
 	for {
 		read, from, err := proxy.listener.ReadFromUDP(readBuf)
