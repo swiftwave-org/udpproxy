@@ -108,7 +108,7 @@ func (m *Manager) PortOccupied(port int) bool {
 func (m *Manager) List() []string {
 	m.Mutex.RLock()
 	defer m.Mutex.RUnlock()
-	var list []string
+	var list []string = make([]string, 0, len(m.ProxyMap))
 	for k := range m.ProxyMap {
 		list = append(list, k)
 	}
