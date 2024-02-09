@@ -68,7 +68,7 @@ func (m *Manager) Remove(pr ProxyRecord) (bool, error) {
 	// check if the proxy exists
 	if _, ok := m.ProxyMap[pr.String()]; !ok {
 		m.Mutex.RUnlock()
-		return false, errors.New("proxy does not exist")
+		return true, nil
 	}
 	m.Mutex.RUnlock()
 	m.Mutex.Lock()
