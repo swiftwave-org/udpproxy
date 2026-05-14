@@ -135,8 +135,8 @@ func (proxy *UDPProxy) Run() {
 		if !hit {
 			ip, err := resolveDNS(proxy.service)
 			if err != nil {
-				// TODO:  report to swiftwave that no IP address found
 				fmt.Printf("Can't resolve the DNS for %s: %s\n", proxy.service, err)
+				reportDNSFailure(proxy.service, proxy.port, proxy.targetPort, err)
 				proxy.connTrackLock.Unlock()
 				continue
 			}

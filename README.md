@@ -20,3 +20,4 @@ The reason is
 **Environment Variables -**
 - `SOCKET_PATH` - Path of the unix socket. Default: `/etc/udpproxy/api.sock`
 - `RECORDS_PATH` - Path of the records file. Default: `/var/lib/udpproxy/records`
+- `SWIFTWAVE_CALLBACK_URL` - Optional. URL to which udpproxy POSTs a JSON `DNSFailureReport` (`event`, `service`, `port`, `targetPort`, `error`, `timestamp`) when a backend service fails DNS resolution. Notifications are deduplicated per service within a 5-minute window. When unset, failures are only logged.
